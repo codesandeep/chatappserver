@@ -102,14 +102,27 @@ app.post("/register", function(req, res) {
     res.send(error);
   });
 });
-app.post("/adduser", function(req, res) {
-  queries.addToChatList(req.body.name, req.body.id);
-  let chats = getChatsFromServer();
-  chats.then(function(result) {
-    res.send(result);
-  });
-  res.send();
+app.post("/addchat", function(req, res) {
+  let addchatPromise = new Promise(function(resolve, reject) {
+    let check=queries.addToChatList(req.body.name, req.body.id);
+    if(check){
+      resolve(check);
+    } else {
+      reject('error');
+    }});
+    addchatPromise.then(function(result){
+      let check = getChatsFromServer();
+        check.then(function(result) {
+          console.log("successfully got chats from server");
+          res.send(result);
+        });
+        check.catch(function(error) {
+          console.log("error while getting chats from server");
+          res.send(error);
+        });
+    });
 });
+
 app.get("/", function(req, res) {});
 
 app.get("/home", function(req, res) {
