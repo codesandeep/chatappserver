@@ -180,6 +180,28 @@ app.post("/login", function(req, res, next) {
   });
 });
 
+app.post("/removechat", function(req, res) {
+  let removePromise = new Promise(function(resolve, reject) {
+    let check=queries.removeFromChatList(req.body.id); 
+    if(check){
+      resolve(check);
+    } else {
+      reject('error');
+    }});
+    removePromise.then(function(result){
+      queries.removeFromChatList(req.body.id);
+      let check = getChatsFromServer();
+        check.then(function(result) {
+          console.log("successfully got chats from server");
+          res.send(result);
+        });
+        check.catch(function(error) {
+          console.log("error while getting chats from server");
+          res.send(error);
+        });
+    })
+});
+
 getMessagesFromServer = function(id) {
   var getMessagePromise = new Promise(function(resolve, reject) {
     message = queries.getMessages(id);
